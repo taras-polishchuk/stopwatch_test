@@ -57,11 +57,12 @@
 }
 
 .btn {
+  width: 100px;
   padding: 8px 16px;
   margin-right: 8px;
   background-color: aliceblue;
   border-radius: 8px;
   font-size: 16px;
   font-family: 'Major Mono Display', monospace;
-  cursor: pointer;
+  border-color: transparent;
 }

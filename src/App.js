@@ -23,6 +23,7 @@ const getParsedTime = (seconds) => {
 const App = () => {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [waitTimer, setWaitTimer] = useState(null);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -37,12 +38,34 @@ const App = () => {
     }
   }, [time, isRunning]);
 
-  const startPause = useCallback(() => {
-    setIsRunning(!isRunning);
+  const start = useCallback(() => {
+    setIsRunning(true);
+    setWaitTimer(null);
   }, [isRunning]);
 
   const stop = useCallback(() => {
     setIsRunning(false);
+    setWaitTimer(null);
+    setTime(0);
+    setTimeRx(0);
+  }, [isRunning]);
+
+  const wait = useCallback(() => {
+    const currentTime = new Date().getTime();
+    if (!waitTimer) {
+      setWaitTimer(currentTime);
+      setTimeout( () => {
+        setWaitTimer(null);
+      }, 330);
+    } else if (currentTime - waitTimer < 300) {
+      setIsRunning(false);
+      setWaitTimer(null);
+    } else {
+      setWaitTimer(null);
+    }
+  }, [isRunning, waitTimer]);
+
+  const reset = useCallback(() => {
     setTime(0);
     setTimeRx(0);
   }, [isRunning]);
@@ -65,8 +88,13 @@ const App = () => {
           rxjs {parsedRxTime}
         </div>
         <div className="controls">
-          <div className="btn" onClick={startPause}>{isRunning ? 'pause' : 'start'}</div>
-          <div className="btn" onClick={stop}>stop</div>
+          {!isRunning ? (
+              <button className="btn" onClick={start}>start</button>
+          ) : (
+            <button className="btn" onClick={stop}>stop</button>
+          )}
+          <button className="btn" onClick={wait} disabled={!isRunning}>wait</button>
+          <button className="btn" onClick={reset}>reset</button>
         </div>
       </section>
     </div>
